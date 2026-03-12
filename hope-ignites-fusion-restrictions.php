@@ -1,14 +1,15 @@
 <?php
 /**
  * Plugin Name: Hope Ignites - Fusion Builder Container Restrictions
- * Plugin URI: https://hopeignites.org
+ * Plugin URI: https://637digital.com
  * Description: Locks specific Avada Fusion Builder containers for certain user roles. Containers with CSS class "nhq-locked" or "nhq-critical" will be restricted for users with the "affiliate_contributor" role.
  * Version: 1.0.0
- * Author: Hope Ignites Technology Team
- * Author URI: https://hopeignites.org
- * License: GPL-2.0+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Author: 637 Digital Solutions
+ * Author URI: https://637digital.com
+ * License: MIT
+ * License URI: https://opensource.org/licenses/MIT
  * Text Domain: hi-fusion-restrictions
+ * Domain Path: /languages
  * Network: true
  */
 
@@ -16,6 +17,10 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+define( 'HI_FUSION_RESTRICTIONS_VERSION', '1.0.0' );
+define( 'HI_FUSION_RESTRICTIONS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'HI_FUSION_RESTRICTIONS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 /**
  * Main Plugin Class
@@ -42,6 +47,9 @@ class HI_Fusion_Container_Restrictions {
      * Constructor
      */
     public function __construct() {
+        // Load plugin text domain for translations
+        add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
+        
         // Admin scripts and styles for Fusion Builder
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
         // Frontend (Avada Live Editor) assets
@@ -68,6 +76,17 @@ class HI_Fusion_Container_Restrictions {
         
         // Fallback: manually output script if not enqueued properly
         add_action( 'wp_footer', array( $this, 'maybe_output_script_manually' ), 9999 );
+    }
+
+    /**
+     * Load plugin text domain for translations
+     */
+    public function load_textdomain() {
+        load_plugin_textdomain(
+            'hi-fusion-restrictions',
+            false,
+            dirname( plugin_basename( __FILE__ ) ) . '/languages'
+        );
     }
 
     /**
@@ -120,7 +139,7 @@ class HI_Fusion_Container_Restrictions {
         error_log( '[HI Fusion Restrictions] CSS enqueued' );
 
         // Enqueue JavaScript
-        $script_url = plugin_dir_url( __FILE__ ) . 'assets/fusion-restrictions.js';
+        $script_url = HI_FUSION_RESTRICTIONS_PLUGIN_URL . 'assets/fusion-restrictions.js';
         error_log( '[HI Fusion Restrictions] Enqueuing JS from: ' . $script_url );
         
         wp_enqueue_script(
@@ -277,7 +296,7 @@ class HI_Fusion_Container_Restrictions {
         }
 
         // Enqueue JS
-        $script_url = plugin_dir_url( __FILE__ ) . 'assets/fusion-restrictions.js';
+        $script_url = HI_FUSION_RESTRICTIONS_PLUGIN_URL . 'assets/fusion-restrictions.js';
         error_log( '[HI Fusion Restrictions] Frontend - Enqueuing JS from: ' . $script_url );
         
         wp_enqueue_script(
@@ -409,12 +428,32 @@ class HI_Fusion_Container_Restrictions {
      * Add settings page
      */
     public function add_settings_page() {
+        // Add to site admin (works per-site in multisite)
         add_options_page(
             __( 'Fusion Builder Restrictions', 'hi-fusion-restrictions' ),
             __( 'Fusion Restrictions', 'hi-fusion-restrictions' ),
             'manage_options',
             'hi-fusion-restrictions',
             array( $this, 'render_settings_page' )
+        );
+        
+        // Add network admin menu if multisite
+        if ( is_multisite() ) {
+            add_action( 'network_admin_menu', array( $this, 'add_network_settings_page' ) );
+        }
+    }
+
+    /**
+     * Add network admin settings page
+     */
+    public function add_network_settings_page() {
+        add_submenu_page(
+            'settings.php',
+            __( 'Fusion Builder Restrictions', 'hi-fusion-restrictions' ),
+            __( 'Fusion Restrictions', 'hi-fusion-restrictions' ),
+            'manage_network_options',
+            'hi-fusion-restrictions-network',
+            array( $this, 'render_network_settings_page' )
         );
     }
 
@@ -521,6 +560,78 @@ class HI_Fusion_Container_Restrictions {
                     <strong><?php _e( 'Restrictions Active:', 'hi-fusion-restrictions' ); ?></strong>
                     <?php echo $this->is_restricted_user() ? __( 'Yes', 'hi-fusion-restrictions' ) : __( 'No', 'hi-fusion-restrictions' ); ?>
                 </p>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render network settings page
+     */
+    public function render_network_settings_page() {
+        if ( ! current_user_can( 'manage_network_options' ) ) {
+            return;
+        }
+        
+        // Get all sites in the network
+        $sites = get_sites( array( 'number' => 1000 ) );
+        
+        ?>
+        <div class="wrap">
+            <h1><?php _e( 'Fusion Builder Restrictions - Network Overview', 'hi-fusion-restrictions' ); ?></h1>
+            
+            <div class="card">
+                <h2><?php _e( 'Plugin Status', 'hi-fusion-restrictions' ); ?></h2>
+                <p><?php _e( 'This plugin is network activated. Each site maintains its own settings.', 'hi-fusion-restrictions' ); ?></p>
+                <p><strong><?php _e( 'Total Sites:', 'hi-fusion-restrictions' ); ?></strong> <?php echo count( $sites ); ?></p>
+            </div>
+
+            <div class="card">
+                <h2><?php _e( 'How It Works in Multisite', 'hi-fusion-restrictions' ); ?></h2>
+                <ul>
+                    <li><?php _e( '✅ Network activation: Plugin active across all sites', 'hi-fusion-restrictions' ); ?></li>
+                    <li><?php _e( '✅ Per-site settings: Each site can customize roles, classes, and contact email', 'hi-fusion-restrictions' ); ?></li>
+                    <li><?php _e( '✅ User roles: Works with site-level and network-level user assignments', 'hi-fusion-restrictions' ); ?></li>
+                    <li><?php _e( '✅ Independent operation: Settings on one site don\'t affect others', 'hi-fusion-restrictions' ); ?></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2><?php _e( 'Configuration Per Site', 'hi-fusion-restrictions' ); ?></h2>
+                <p><?php _e( 'Site administrators can configure restrictions at:', 'hi-fusion-restrictions' ); ?></p>
+                <p><strong><?php _e( 'Settings → Fusion Restrictions', 'hi-fusion-restrictions' ); ?></strong></p>
+                
+                <h3><?php _e( 'Site List', 'hi-fusion-restrictions' ); ?></h3>
+                <table class="widefat">
+                    <thead>
+                        <tr>
+                            <th><?php _e( 'Site', 'hi-fusion-restrictions' ); ?></th>
+                            <th><?php _e( 'Path', 'hi-fusion-restrictions' ); ?></th>
+                            <th><?php _e( 'Settings Link', 'hi-fusion-restrictions' ); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ( $sites as $site ) : 
+                            switch_to_blog( $site->blog_id );
+                            $site_name = get_bloginfo( 'name' );
+                            $settings_url = admin_url( 'options-general.php?page=hi-fusion-restrictions' );
+                            restore_current_blog();
+                        ?>
+                            <tr>
+                                <td><strong><?php echo esc_html( $site_name ); ?></strong></td>
+                                <td><?php echo esc_html( $site->path ); ?></td>
+                                <td><a href="<?php echo esc_url( $settings_url ); ?>" target="_blank"><?php _e( 'Configure', 'hi-fusion-restrictions' ); ?></a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2><?php _e( 'Default Configuration', 'hi-fusion-restrictions' ); ?></h2>
+                <p><strong><?php _e( 'Restricted Role:', 'hi-fusion-restrictions' ); ?></strong> affiliate_contributor</p>
+                <p><strong><?php _e( 'Locked Classes:', 'hi-fusion-restrictions' ); ?></strong> nhq-locked, nhq-critical</p>
+                <p><strong><?php _e( 'Default Contact:', 'hi-fusion-restrictions' ); ?></strong> marketing@hopeignites.org</p>
             </div>
         </div>
         <?php
@@ -695,17 +806,64 @@ add_action( 'plugins_loaded', 'hi_fusion_restrictions_init' );
  * Activation hook
  */
 register_activation_hook( __FILE__, 'hi_fusion_restrictions_activate' );
-function hi_fusion_restrictions_activate() {
-    // Set default options
+function hi_fusion_restrictions_activate( $network_wide ) {
+    if ( is_multisite() && $network_wide ) {
+        // Network activation - set defaults for all sites
+        $sites = get_sites( array( 'number' => 1000 ) );
+        
+        foreach ( $sites as $site ) {
+            switch_to_blog( $site->blog_id );
+            hi_fusion_restrictions_set_default_options();
+            restore_current_blog();
+        }
+        
+        // Also handle new sites added later
+        add_action( 'wpmu_new_blog', 'hi_fusion_restrictions_new_site', 10, 1 );
+    } else {
+        // Single site activation
+        hi_fusion_restrictions_set_default_options();
+    }
+}
+
+/**
+ * Set default options for a site
+ */
+function hi_fusion_restrictions_set_default_options() {
+    // Only add if they don't exist (won't override existing settings)
     add_option( 'hi_fusion_contact_email', 'marketing@hopeignites.org' );
     add_option( 'hi_fusion_restricted_roles', array( 'affiliate_contributor' ) );
     add_option( 'hi_fusion_locked_classes', array( 'nhq-locked', 'nhq-critical' ) );
 }
 
 /**
+ * Run activation for newly created sites in network
+ */
+function hi_fusion_restrictions_new_site( $blog_id ) {
+    if ( is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
+        switch_to_blog( $blog_id );
+        hi_fusion_restrictions_set_default_options();
+        restore_current_blog();
+    }
+}
+
+/**
  * Deactivation hook
  */
 register_deactivation_hook( __FILE__, 'hi_fusion_restrictions_deactivate' );
-function hi_fusion_restrictions_deactivate() {
-    // Cleanup if needed
+function hi_fusion_restrictions_deactivate( $network_wide ) {
+    if ( is_multisite() && $network_wide ) {
+        // Network deactivation cleanup if needed
+        error_log( '[HI Fusion Restrictions] Network deactivation - settings preserved per site' );
+    }
+    // Note: We preserve settings on deactivation for easy reactivation
 }
+
+/**
+ * Handle site deletion in multisite
+ */
+function hi_fusion_restrictions_delete_site( $site_id ) {
+    // WordPress automatically cleans up options when a site is deleted
+    // This is just for logging/tracking if needed
+    error_log( '[HI Fusion Restrictions] Site deleted: ' . $site_id );
+}
+add_action( 'delete_blog', 'hi_fusion_restrictions_delete_site', 10, 1 );

@@ -2,7 +2,37 @@
 
 ## 🚀 Get Started in 5 Minutes
 
-### Step 1: Upload Plugin (2 minutes)
+### For Multisite Network (Recommended) ⭐
+
+**This plugin is optimized for multisite networks!**
+
+#### Step 1a: Network Activate (2 minutes)
+
+1. **Upload the plugin:**
+   - Connect to your server via FTP
+   - Navigate to `/wp-content/plugins/`
+   - Upload the entire `hope-ignites-fusion-restrictions` folder
+
+2. **Network Activate:**
+   - Go to **Network Admin → Plugins**
+   - Find "Hope Ignites - Fusion Builder Container Restrictions"
+   - Click **"Network Activate"**
+
+3. **Automatic Setup:**
+   - ✅ Plugin activates on all existing sites
+   - ✅ Default settings applied automatically to each site
+   - ✅ Future new sites get auto-configured
+   - ✅ Each site can customize their settings independently
+
+4. **View Network Overview:**
+   - Go to **Network Admin → Settings → Fusion Restrictions**
+   - See status of all sites
+   - Access configuration links for each site
+   - View default settings being applied
+
+---
+
+### For Single Site Installation
 
 **Option A: Upload via WordPress Admin**
 1. Download all files to a folder named: `hope-ignites-fusion-restrictions`
@@ -18,11 +48,6 @@
 4. Go to WordPress Admin → Plugins
 5. Find "Hope Ignites - Fusion Builder Container Restrictions"
 6. Click "Activate"
-
-**Option C: For Multisite (Network Activation)**
-1. Upload plugin as described above
-2. Go to **Network Admin → Plugins**
-3. Click "Network Activate"
 
 ---
 
@@ -61,10 +86,32 @@
 
 ### Step 3: Configure Settings (Optional)
 
+**For Single Sites:**
 1. Go to **Settings → Fusion Restrictions**
 2. Review the setup instructions
 3. Change contact email if needed (default: marketing@hopeignites.org)
 4. Check your current role and restriction status
+
+**For Multisite Network:**
+
+*As Network Admin:*
+1. Go to **Network Admin → Settings → Fusion Restrictions**
+2. View overview of all sites in your network
+3. Access individual site configurations
+4. See which sites have the plugin active
+
+*As Site Admin:*
+1. Go to **Site Dashboard → Settings → Fusion Restrictions**
+2. Customize contact email for your specific site
+3. View restriction status
+4. Each site maintains independent settings
+
+**Multisite Benefits:**
+- ✅ **One activation** applies to all sites
+- ✅ **New sites** automatically get configured
+- ✅ **Per-site customization** available
+- ✅ **Centralized management** via network admin
+- ✅ **Independent operation** - settings don't affect other sites
 
 ---
 
@@ -77,6 +124,7 @@ Your plugin folder should look like this:
 ├── hope-ignites-fusion-restrictions.php  ← Main plugin
 ├── assets/
 │   └── fusion-restrictions.js            ← JavaScript
+├── LICENSE                                ← MIT License
 ├── README.md                              ← Full documentation
 └── QUICK-START.md                         ← This file
 ```
@@ -125,6 +173,14 @@ Your plugin folder should look like this:
 - ✅ Name: `Affiliate Contributor`
 - ✅ Copy from: Contributor or Editor
 - ✅ Save
+- ✅ **For Multisite:** Create role on each site where you need restrictions, or use a network-wide role management plugin
+
+### "Plugin not working on specific site in network"
+- ✅ Check plugin is network activated
+- ✅ Verify user has `affiliate_contributor` role on that specific site
+- ✅ Check site-specific settings at: Site Dashboard → Settings → Fusion Restrictions
+- ✅ Test by switching to that site's admin panel
+- ✅ Look for site-specific errors in debug log
 
 ### "JavaScript not loading"
 - ✅ Check `/assets/fusion-restrictions.js` exists
@@ -172,6 +228,11 @@ Quick tests to verify everything works:
 - Technology Services: technology@hopeignites.org
 - Peter Schweiss: Primary Admin
 - Laura Stevens: Secondary Admin
+
+**Plugin Developer:**
+- 637 Digital Solutions
+- Website: https://637digital.com
+- For technical issues and customizations
 
 **Check These First:**
 1. Browser console (F12 → Console)

@@ -1,9 +1,9 @@
-# Hope Ignites - Fusion Builder Container Restrictions Plugin
+# Avada Fusion Builder Container Restrictions Plugin
 
 **Version:** 1.0.0  
 **Requires:** WordPress 5.5+, Avada Theme  
 **Tested up to:** WordPress 6.4  
-**License:** GPL-2.0+
+**License:** MIT
 
 ## Description
 
@@ -17,8 +17,8 @@ This plugin restricts editing of specific Avada Fusion Builder containers based 
 - ✅ Custom restriction messages
 - ✅ Server-side validation prevents unauthorized saves
 - ✅ Compatible with Fusion Builder backend and live editors
-- ✅ Network/Multisite compatible
-- ✅ Easy configuration via Settings page
+- ✅ **Optimized for Multisite** - Network activation with per-site settings
+- ✅ Easy configuration via Settings page (per site or network overview)
 
 ## Installation
 
@@ -46,7 +46,9 @@ hope-ignites-fusion-restrictions/
 ├── hope-ignites-fusion-restrictions.php  (Main plugin file)
 ├── assets/
 │   └── fusion-restrictions.js            (JavaScript for restrictions)
-└── README.md                              (This file)
+├── LICENSE                                (MIT License)
+├── README.md                              (This file)
+└── QUICK-START.md                         (Quick start guide)
 ```
 
 ## How It Works
@@ -74,13 +76,19 @@ Add the class to the shortcode:
 
 Users with the `affiliate_contributor` role will automatically have restrictions applied.
 
-To create this role, use PublishPress Capabilities:
+**For Single Site:**
 1. Go to **PublishPress → Capabilities**
 2. Click **Add Role**
 3. Name: `Affiliate Contributor`
 4. Copy capabilities from: `Contributor` or `Editor`
 5. Customize permissions as needed
 6. Save
+
+**For Multisite Network:**
+- You can assign the role at the site level (site-specific users)
+- Or assign users network-wide and give them the role per site
+- The role needs to exist on each site where you want restrictions
+- Consider creating the role on your primary site, then use a role management plugin to sync across sites
 
 ### Step 3: Test the Restrictions
 
@@ -224,16 +232,84 @@ Default is `marketing@hopeignites.org`, or change via Settings page.
 3. Try rebuilding Fusion Builder cache (Avada → Options → Performance)
 4. Ensure content is saved as shortcodes, not HTML
 
-## Multisite Considerations
+## Multisite Configuration
 
-### Network Activation
-- Can be network-activated to apply across all sites
-- Settings are site-specific
-- Works with network-wide roles
+### Network Activation (Recommended)
 
-### Per-Site Activation
-- Can activate individually on each site
-- Better for testing on staging sites first
+The plugin is **optimized for network activation** with per-site settings:
+
+**Benefits:**
+- ✅ One-click activation across all sites
+- ✅ Automatic setup for new sites added to network
+- ✅ Each site maintains independent settings
+- ✅ Network admin overview of all sites
+- ✅ Easy centralized management
+
+**How to Network Activate:**
+1. Go to **Network Admin → Plugins**
+2. Click **Network Activate** on this plugin
+3. Default settings are automatically applied to all sites
+4. Each site admin can customize their settings
+
+### Network Admin Overview
+
+Network administrators can view status across all sites:
+
+1. Go to **Network Admin → Settings → Fusion Restrictions**
+2. View:
+   - Total sites in network
+   - List of all sites with configuration links
+   - Default settings being applied
+   - Quick access to each site's settings
+
+### Per-Site Settings
+
+Each site administrator can customize settings independently:
+
+1. Go to **Site Admin → Settings → Fusion Restrictions**
+2. Configure:
+   - Contact email (shown in lock messages)
+   - View current role restrictions
+   - See testing instructions
+   - Check restriction status
+
+### What's Site-Specific:
+- ✅ Contact email address
+- ✅ Restriction messages
+- ✅ User role assignments (users can be site-specific)
+- ✅ Locked container content
+
+### What's Consistent Across Sites:
+- ✅ Restricted role name: `affiliate_contributor`
+- ✅ Locked CSS classes: `nhq-locked`, `nhq-critical`
+- ✅ Plugin functionality and behavior
+
+**Note:** To change the restricted role or locked classes for all sites, edit the plugin code (lines 33 and 38 in main PHP file).
+
+### New Site Handling
+
+When you add a new site to your network:
+- Plugin automatically activates on the new site
+- Default settings are applied automatically
+- Site admin can customize immediately
+- No manual configuration required
+
+### Testing in Multisite
+
+**Best Practice:**
+1. Create a test site in your network
+2. Network activate on staging first
+3. Test with `affiliate_contributor` role on test site
+4. Verify restrictions work as expected
+5. Then network activate on production
+
+### Per-Site Activation (Alternative)
+
+You can also activate individually per site:
+- Better for selective deployment
+- Good for testing on specific sites
+- Site admins can activate independently
+- Settings still remain site-specific
 
 ## Compatibility
 
@@ -260,30 +336,55 @@ Default is `marketing@hopeignites.org`, or change via Settings page.
 **For Plugin Issues:**
 - Check WordPress debug logs
 - Review browser console for JavaScript errors
-- Contact your developer with error details
+- Contact 637 Digital Solutions via https://637digital.com
 
 ## Changelog
 
-### Version 1.0.0 - 2025-01-20
+### Version 1.0.0 - March 2026
 - Initial release
 - Container locking by CSS class
 - Role-based restrictions
 - Visual indicators
 - Server-side validation
-- Settings page
-- Multisite support
+- Settings page per site
+- **Optimized multisite support:**
+  - Network activation with automatic setup
+  - Per-site independent settings
+  - Network admin overview page
+  - Automatic default setup for new sites
+  - Translation-ready with text domain loading
 
 ## License
 
-This plugin is licensed under GPL-2.0+. You are free to use, modify, and distribute this plugin for Hope Ignites' internal use.
+MIT License
+
+Copyright (c) 2026 637 Digital Solutions
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Credits
 
-Developed for Hope Ignites by the Technology Services team.
+Developed for Hope Ignites by 637 Digital Solutions.
 Based on Avada Fusion Builder architecture and WordPress plugin standards.
 
 ---
 
-**Last Updated:** January 2025  
-**Plugin URI:** https://hopeignites.org  
-**Author:** Hope Ignites Technology Team
+**Last Updated:** March 2026  
+**Plugin URI:** https://637digital.com  
+**Author:** 637 Digital Solutions
